@@ -3,11 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#25324a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="icon" href="./assets/fitness-1.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./assets/fitness-1.svg" />
     <title>PATH FIT 1 Lesson Slides</title>
+    <link rel="manifest" href="./manifest.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="desktop">
@@ -39,6 +46,7 @@
         </div>
 
         <div class="browser-center">
+          <span class="mobile-app-title">PATHFIT 1</span>
           <div class="address-bar">
             <span class="address-lock">🔒</span>
             <span class="address-text">C:/Users/Angelo...</span>
@@ -57,6 +65,29 @@
       </header>
 
           <main class="lesson-shell">
+        <section class="app-home" id="appHome" aria-label="PATHFIT home">
+          <div class="app-home-kicker">PATH FIT 1 / HOME</div>
+          <h1>Move with purpose.</h1>
+          <p>Choose where you want to begin.</p>
+          <div class="feature-grid">
+            <button class="feature-card feature-card-primary" id="startLessonsButton" type="button">
+              <span class="feature-icon">▶</span>
+              <strong>Start Lessons</strong>
+              <small>Continue through the PATHFIT slides.</small>
+            </button>
+            <button class="feature-card" id="openQuizButton" type="button">
+              <span class="feature-icon">?</span>
+              <strong>Long Quiz</strong>
+              <small>Test what you have learned.</small>
+            </button>
+            <button class="feature-card" id="openCourseMapButton" type="button">
+              <span class="feature-icon">▦</span>
+              <strong>Course Map</strong>
+              <small>See the PATHFIT sequence.</small>
+            </button>
+          </div>
+        </section>
+
         <div class="progress-row">
           <div class="progress-track">
             <div class="progress-fill"></div>
@@ -75,6 +106,7 @@
 
         <div class="bottom-actions">
           <button class="secondary-btn" id="backButton" disabled>← BACK</button>
+          <span class="actions-divider" aria-hidden="true"></span>
           <button class="primary-btn" id="continueButton">CONTINUE ▶</button>
         </div>
           </main>
@@ -93,8 +125,19 @@
           <span class="status-time">PATHFIT 1</span>
         </div>
       </footer>
+
+      <nav class="android-nav" aria-label="Android navigation">
+        <button id="androidBack" type="button" aria-label="Android back">‹</button>
+        <button id="androidHome" type="button" aria-label="Android home">○</button>
+        <button id="androidOverview" type="button" aria-label="Android overview">□</button>
+      </nav>
     </div>
 
-    <script src="script.js"></script>
+    <script src="./script.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
+      }
+    </script>
   </body>
 </html>

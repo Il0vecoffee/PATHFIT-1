@@ -1,0 +1,36 @@
+{
+  "name": "PATHFIT 1 Lesson App",
+  "short_name": "PATHFIT 1",
+  "description": "Interactive PATHFIT 1 lesson slides and checkpoint quizzes.",
+  "id": "./index.html",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#25324a",
+  "theme_color": "#25324a",
+  "categories": ["education", "health", "fitness"],
+  "icons": [
+    {
+      "src": "assets/fitness-1.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Start Lessons",
+      "short_name": "Lessons",
+      "url": "./index.html",
+      "icons": [{ "src": "assets/fitness-1.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Open Long Quiz",
+      "short_name": "Long Quiz",
+      "url": "./index.html#long-quiz",
+      "icons": [{ "src": "assets/fitness-4.svg", "sizes": "any", "type": "image/svg+xml" }]
+    }
+  ]
+}

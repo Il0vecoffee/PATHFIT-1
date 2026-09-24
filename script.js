@@ -5,12 +5,19 @@ const continueButton = document.getElementById('continueButton');
 const clipCurrent = document.getElementById('clipCurrent');
 const clipTotal = document.getElementById('clipTotal');
 const appWindow = document.querySelector('.browser-window');
+const lessonShell = document.querySelector('.lesson-shell');
 const appTopbar = document.querySelector('.browser-topbar');
 const maximizeWindow = document.getElementById('maximizeWindow');
 const closeWindow = document.getElementById('closeWindow');
 const taskbarApp = document.querySelector('.taskbar-app');
 const desktopAppIcon = document.querySelector('.desktop-icon');
 const longQuizIcon = document.getElementById('longQuizIcon');
+const androidBack = document.getElementById('androidBack');
+const androidHome = document.getElementById('androidHome');
+const androidOverview = document.getElementById('androidOverview');
+const startLessonsButton = document.getElementById('startLessonsButton');
+const openQuizButton = document.getElementById('openQuizButton');
+const openCourseMapButton = document.getElementById('openCourseMapButton');
 
 const slidesData = [
   {
@@ -869,11 +876,11 @@ function createCheckpointSlides(lessonPages) {
     if (unit === 'CLOSING') return;
 
     const unitPages = lessonPages.filter((slide) => slide.unit === unit);
-    const questionCount = Math.max(1, Math.ceil(unitPages.length / 2));
+    const questionCount = Math.max(1, unitPages.length);
     const bulletPool = unitPages.flatMap((slide) => slide.bullets);
 
     for (let questionIndex = 0; questionIndex < questionCount; questionIndex += 1) {
-      const lessonPage = unitPages[Math.min(questionIndex * 2, unitPages.length - 1)];
+      const lessonPage = unitPages[questionIndex];
       const correctAnswer = lessonPage.bullets[questionIndex % lessonPage.bullets.length];
       const distractors = bulletPool.filter((bullet) => bullet !== correctAnswer).slice(0, 2);
       const options = [correctAnswer, ...distractors];
@@ -914,6 +921,104 @@ let isLongQuizMode = false;
 let slides = [];
 let quizSlideIndexes = [];
 
+const imageThemes = [
+  {
+    keywords: ['skeletal', 'skeleton', 'bone', 'bones', 'joint', 'joints', 'ligament', 'cartilage', 'axial', 'appendicular'],
+    tags: 'skeleton,anatomy,bones',
+    images: [
+      'https://images.pexels.com/photos/4226256/pexels-photo-4226256.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      'https://images.pexels.com/photos/7659564/pexels-photo-7659564.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    ]
+  },
+  {
+    keywords: ['historical', 'history', 'legal bases', 'international', 'constitutional'],
+    tags: 'history,education,school',
+    images: [
+      'https://images.pexels.com/photos/5212345/pexels-photo-5212345.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      'https://images.pexels.com/photos/3768126/pexels-photo-3768126.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    ]
+  },
+  {
+    keywords: ['dance', 'cultural', 'aesthetic', 'unity'],
+    tags: 'dance,physical,education',
+    images: [
+      'https://images.pexels.com/photos/1701194/pexels-photo-1701194.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      'https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    ]
+  },
+  {
+    keywords: ['sports', 'sport', 'athletic', 'teamwork', 'leadership', 'games'],
+    tags: 'sports,team,athletics',
+    images: [
+      'https://images.pexels.com/photos/1268855/pexels-photo-1268855.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      'https://images.pexels.com/photos/3621104/pexels-photo-3621104.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    ]
+  },
+  {
+    keywords: ['movement', 'motor skills', 'competency', 'coordination', 'education through movement'],
+    tags: 'movement,exercise,fitness',
+    images: [
+      'https://images.pexels.com/photos/2294361/pexels-photo-2294361.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      'https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    ]
+  },
+  {
+    keywords: ['fitness', 'exercise', 'health', 'physical development', 'recommendations', 'inactivity'],
+    tags: 'fitness,exercise,health',
+    images: [
+      'https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      'https://images.pexels.com/photos/416778/pexels-photo-416778.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    ]
+  },
+  {
+    keywords: ['curriculum', 'objectives', 'purpose', 'directions', 'general objectives'],
+    tags: 'students,learning,education',
+    images: [
+      'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      'https://images.pexels.com/photos/3768916/pexels-photo-3768916.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    ]
+  }
+];
+
+const defaultImages = [
+  'https://images.pexels.com/photos/3768004/pexels-photo-3768004.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768007/pexels-photo-3768007.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768010/pexels-photo-3768010.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768019/pexels-photo-3768019.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768020/pexels-photo-3768020.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768021/pexels-photo-3768021.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768022/pexels-photo-3768022.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768023/pexels-photo-3768023.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768024/pexels-photo-3768024.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768025/pexels-photo-3768025.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768026/pexels-photo-3768026.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768031/pexels-photo-3768031.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768039/pexels-photo-3768039.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768043/pexels-photo-3768043.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/3768047/pexels-photo-3768047.jpeg?auto=compress&cs=tinysrgb&w=1200'
+];
+
+const svgImages = [
+  './assets/fitness-1.svg',
+  './assets/fitness-2.svg',
+  './assets/fitness-3.svg',
+  './assets/fitness-4.svg',
+  './assets/fitness-5.svg'
+];
+
+const usedImageUrls = new Set();
+
+function getSlideImages(slideData) {
+  const searchableText = `${slideData.title} ${slideData.text} ${(slideData.bullets || []).join(' ')}`.toLowerCase();
+  const theme = imageThemes.find(({ keywords }) => keywords.some((keyword) => searchableText.includes(keyword)));
+  const candidates = [...(theme ? theme.images : []), ...defaultImages, ...svgImages];
+  const available = candidates.filter((imageUrl) => !usedImageUrls.has(imageUrl));
+  const images = available.slice(0, 2);
+
+  images.forEach((imageUrl) => usedImageUrls.add(imageUrl));
+  return images.length === 2 ? images : [images[0] || defaultImages[0], images[1] || defaultImages[1]];
+}
+
 function buildSlides() {
   slidesContainer.innerHTML = '';
 
@@ -930,16 +1035,6 @@ function buildSlides() {
 
     const accentColors = ['#f5d5b9', '#c9efff', '#dff7d7', '#f9e7f7', '#dffcf6', '#fff3d8', '#ffe4ef', '#e5f2ff', '#f9ead6'];
     const accent = accentColors[index % accentColors.length];
-    const imageOptions = [
-      'assets/fitness-1.svg',
-      'assets/fitness-2.svg',
-      'assets/fitness-3.svg',
-      'assets/fitness-4.svg',
-      'assets/fitness-5.svg'
-    ];
-    const imageSrc = slideData.image || imageOptions[index % imageOptions.length];
-    const secondaryImageSrc = imageOptions[(index + 1) % imageOptions.length];
-
     if (slideData.type === 'quiz') {
       section.innerHTML = `
         <div class="headline-panel">
@@ -984,12 +1079,6 @@ function buildSlides() {
           </ul>
         </div>
 
-        <div class="right-art">
-          <div class="photo-card">
-            <img class="slide-image" src="${imageSrc}" alt="${slideData.title}" />
-            <img class="slide-image" src="${secondaryImageSrc}" alt="" aria-hidden="true" />
-          </div>
-        </div>
       </div>
     `;
 
@@ -1018,6 +1107,7 @@ function updateLessonChrome() {
   continueButton.disabled = activeQuiz && slides[activeSlide].dataset.answered !== 'true';
   clipCurrent.textContent = String(displayPosition);
   clipTotal.textContent = String(displayTotal);
+
 }
 
 function showSlide(nextSlide, direction) {
@@ -1055,6 +1145,8 @@ function openLongQuiz() {
   const firstQuizSlide = quizSlideIndexes[0];
   if (typeof firstQuizSlide !== 'number') return;
 
+  resetQuizSession();
+  lessonShell.classList.remove('is-home');
   restoreWindow();
   appWindow.classList.remove('is-fullscreen');
   isLongQuizMode = true;
@@ -1067,8 +1159,17 @@ function openLongQuiz() {
 }
 
 function openLessonApp() {
+  lessonShell.classList.remove('is-home');
   restoreWindow();
   isLongQuizMode = false;
+
+  if (!window.matchMedia('(max-width: 700px)').matches) {
+    ['position', 'left', 'top', 'width', 'height', 'margin'].forEach((property) => {
+      appWindow.style.removeProperty(property);
+    });
+    appWindow.classList.add('is-fullscreen');
+    maximizeWindow.setAttribute('aria-label', 'Restore window');
+  }
 
   if (activeSlide !== 0) {
     slides[activeSlide].classList.remove('is-active');
@@ -1079,6 +1180,43 @@ function openLessonApp() {
   }
 
   updateLessonChrome();
+}
+
+function showAppHome() {
+  resetQuizSession();
+  isLongQuizMode = false;
+  lessonShell.classList.add('is-home');
+}
+
+function resetQuizSession() {
+  quizSlideIndexes.forEach((quizIndex) => {
+    const quizSlide = slides[quizIndex];
+    const optionsContainer = quizSlide.querySelector('.quiz-options');
+    const options = Array.from(optionsContainer.querySelectorAll('.quiz-option'));
+    const correctOption = options[Number(quizSlide.dataset.correctIndex)];
+
+    for (let optionIndex = options.length - 1; optionIndex > 0; optionIndex -= 1) {
+      const randomIndex = Math.floor(Math.random() * (optionIndex + 1));
+      [options[optionIndex], options[randomIndex]] = [options[randomIndex], options[optionIndex]];
+    }
+
+    options.forEach((option) => {
+      option.classList.remove('is-correct', 'is-incorrect');
+      option.disabled = false;
+      optionsContainer.appendChild(option);
+    });
+
+    quizSlide.dataset.answered = 'false';
+    quizSlide.dataset.correctIndex = String(options.indexOf(correctOption));
+    quizSlide.querySelector('.quiz-feedback').textContent = '';
+  });
+}
+
+function openCourseMap() {
+  const courseMapIndex = slideSequence.findIndex((slide) => slide.title === 'PHYSICAL EDUCATION CURRICULUM MAP');
+  if (courseMapIndex < 0) return;
+  lessonShell.classList.remove('is-home');
+  showSlide(courseMapIndex, 'forward');
 }
 
 slidesContainer.addEventListener('click', (event) => {
@@ -1113,7 +1251,27 @@ window.addEventListener('keydown', (event) => {
   if (event.key === 'ArrowLeft') showSlide(activeSlide - 1, 'back');
 });
 
+let touchStartX = 0;
+let touchStartY = 0;
+
+slidesContainer.addEventListener('touchstart', (event) => {
+  const touch = event.changedTouches[0];
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+}, { passive: true });
+
+slidesContainer.addEventListener('touchend', (event) => {
+  const touch = event.changedTouches[0];
+  const deltaX = touch.clientX - touchStartX;
+  const deltaY = touch.clientY - touchStartY;
+
+  if (Math.abs(deltaX) < 48 || Math.abs(deltaX) < Math.abs(deltaY)) return;
+  if (deltaX < 0) showSlide(activeSlide + 1, 'forward');
+  if (deltaX > 0) showSlide(activeSlide - 1, 'back');
+}, { passive: true });
+
 updateLessonChrome();
+showAppHome();
 
 function restoreWindow() {
   appWindow.classList.remove('is-minimized', 'is-closed', 'is-fullscreen');
@@ -1145,6 +1303,14 @@ closeWindow.addEventListener('click', () => {
 taskbarApp.addEventListener('click', restoreWindow);
 desktopAppIcon.addEventListener('click', openLessonApp);
 longQuizIcon.addEventListener('click', openLongQuiz);
+androidBack.addEventListener('click', () => showSlide(activeSlide - 1, 'back'));
+androidHome.addEventListener('click', showAppHome);
+androidOverview.addEventListener('click', restoreWindow);
+startLessonsButton.addEventListener('click', openLessonApp);
+openQuizButton.addEventListener('click', openLongQuiz);
+openCourseMapButton.addEventListener('click', openCourseMap);
+
+if (window.location.hash === '#long-quiz') window.setTimeout(openLongQuiz, 0);
 
 let dragState = null;
 
