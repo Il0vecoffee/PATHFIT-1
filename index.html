@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PATH FIT 1 Lesson Slides</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="browser-window">
+      <header class="browser-topbar">
+        <div class="browser-left">
+          <button class="nav-icon" aria-label="Back">←</button>
+          <div class="dot-group">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+        </div>
+
+        <div class="browser-center">
+          <div class="address-bar">
+            <span class="address-lock">🔒</span>
+            <span class="address-text">C:/Users/Angelo...</span>
+          </div>
+        </div>
+
+        <div class="browser-right">
+          <button class="toolbar-btn" aria-label="Save">⎈</button>
+          <button class="toolbar-btn" aria-label="Share">⇅</button>
+          <button class="toolbar-btn" aria-label="Menu">⋯</button>
+        </div>
+      </header>
+
+      <main class="lesson-shell">
+        <div class="progress-row">
+          <div class="progress-track">
+            <div class="progress-fill"></div>
+          </div>
+          <div class="score-pill clip-counter">
+            <span>Clip</span>
+            <strong id="clipCurrent">1</strong>
+            <span>/</span>
+            <strong id="clipTotal">1</strong>
+          </div>
+          <div class="score-pill">⭐ <span>320</span></div>
+          <div class="score-pill">🔥 <span>8</span></div>
+        </div>
+
+        <div id="slidesContainer"></div>
+
+        <div class="bottom-actions">
+          <button class="secondary-btn" id="backButton" disabled>← BACK</button>
+          <button class="primary-btn" id="continueButton">CONTINUE ▶</button>
+        </div>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
