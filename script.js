@@ -4,6 +4,13 @@ const backButton = document.getElementById('backButton');
 const continueButton = document.getElementById('continueButton');
 const clipCurrent = document.getElementById('clipCurrent');
 const clipTotal = document.getElementById('clipTotal');
+const appWindow = document.querySelector('.browser-window');
+const appTopbar = document.querySelector('.browser-topbar');
+const maximizeWindow = document.getElementById('maximizeWindow');
+const closeWindow = document.getElementById('closeWindow');
+const taskbarApp = document.querySelector('.taskbar-app');
+const desktopAppIcon = document.querySelector('.desktop-icon');
+const longQuizIcon = document.getElementById('longQuizIcon');
 
 const slidesData = [
   {
@@ -903,7 +910,9 @@ lessonUnits.forEach((unit) => {
 
 let activeSlide = 0;
 let isTransitioning = false;
+let isLongQuizMode = false;
 let slides = [];
+let quizSlideIndexes = [];
 
 function buildSlides() {
   slidesContainer.innerHTML = '';
@@ -988,32 +997,50 @@ function buildSlides() {
   });
 
   slides = Array.from(document.querySelectorAll('.slide'));
+  quizSlideIndexes = slides
+    .map((slide, index) => slide.classList.contains('quiz-slide') ? index : -1)
+    .filter((index) => index >= 0);
 }
 
 function updateLessonChrome() {
-  const progress = ((activeSlide + 1) / slides.length) * 100;
+  const quizPosition = quizSlideIndexes.indexOf(activeSlide);
+  const displayPosition = isLongQuizMode && quizPosition >= 0 ? quizPosition + 1 : activeSlide + 1;
+  const displayTotal = isLongQuizMode ? quizSlideIndexes.length : slides.length;
+  const progress = (displayPosition / displayTotal) * 100;
   progressFill.style.width = `${progress}%`;
-  backButton.disabled = activeSlide === 0;
-  continueButton.textContent = activeSlide === slides.length - 1 ? 'FINISH ✓' : 'CONTINUE ▶';
+  backButton.disabled = isLongQuizMode
+    ? quizPosition <= 0
+    : activeSlide === 0;
+  continueButton.textContent = isLongQuizMode && quizPosition === quizSlideIndexes.length - 1
+    ? 'FINISH ✓'
+    : activeSlide === slides.length - 1 ? 'FINISH ✓' : 'CONTINUE ▶';
   const activeQuiz = slides[activeSlide]?.classList.contains('quiz-slide');
   continueButton.disabled = activeQuiz && slides[activeSlide].dataset.answered !== 'true';
-  clipCurrent.textContent = String(activeSlide + 1);
-  clipTotal.textContent = String(slides.length);
+  clipCurrent.textContent = String(displayPosition);
+  clipTotal.textContent = String(displayTotal);
 }
 
 function showSlide(nextSlide, direction) {
-  if (isTransitioning || nextSlide < 0 || nextSlide >= slides.length || nextSlide === activeSlide) return;
+  let targetSlide = nextSlide;
+
+  if (isLongQuizMode) {
+    const quizPosition = quizSlideIndexes.indexOf(activeSlide);
+    const targetPosition = quizPosition + (direction === 'forward' ? 1 : -1);
+    targetSlide = quizSlideIndexes[targetPosition];
+  }
+
+  if (isTransitioning || typeof targetSlide !== 'number' || targetSlide < 0 || targetSlide >= slides.length || targetSlide === activeSlide) return;
 
   isTransitioning = true;
   slides[activeSlide].classList.remove('is-active');
   slides[activeSlide].setAttribute('aria-hidden', 'true');
 
-  const incoming = slides[nextSlide];
+  const incoming = slides[targetSlide];
   incoming.classList.remove('is-forward', 'is-back');
   void incoming.offsetWidth;
   incoming.classList.add('is-active', direction === 'forward' ? 'is-forward' : 'is-back');
   incoming.setAttribute('aria-hidden', 'false');
-  activeSlide = nextSlide;
+  activeSlide = targetSlide;
   updateLessonChrome();
 
   window.setTimeout(() => {
@@ -1023,6 +1050,36 @@ function showSlide(nextSlide, direction) {
 }
 
 buildSlides();
+
+function openLongQuiz() {
+  const firstQuizSlide = quizSlideIndexes[0];
+  if (typeof firstQuizSlide !== 'number') return;
+
+  restoreWindow();
+  appWindow.classList.remove('is-fullscreen');
+  isLongQuizMode = true;
+  slides[activeSlide].classList.remove('is-active');
+  slides[activeSlide].setAttribute('aria-hidden', 'true');
+  slides[firstQuizSlide].classList.add('is-active');
+  slides[firstQuizSlide].setAttribute('aria-hidden', 'false');
+  activeSlide = firstQuizSlide;
+  updateLessonChrome();
+}
+
+function openLessonApp() {
+  restoreWindow();
+  isLongQuizMode = false;
+
+  if (activeSlide !== 0) {
+    slides[activeSlide].classList.remove('is-active');
+    slides[activeSlide].setAttribute('aria-hidden', 'true');
+    slides[0].classList.add('is-active');
+    slides[0].setAttribute('aria-hidden', 'false');
+    activeSlide = 0;
+  }
+
+  updateLessonChrome();
+}
 
 slidesContainer.addEventListener('click', (event) => {
   const option = event.target.closest('.quiz-option');
@@ -1057,3 +1114,73 @@ window.addEventListener('keydown', (event) => {
 });
 
 updateLessonChrome();
+
+function restoreWindow() {
+  appWindow.classList.remove('is-minimized', 'is-closed', 'is-fullscreen');
+  maximizeWindow.setAttribute('aria-label', 'Fullscreen window');
+  taskbarApp.classList.add('is-active');
+}
+
+maximizeWindow.addEventListener('click', () => {
+  appWindow.classList.remove('is-minimized', 'is-closed');
+  taskbarApp.classList.add('is-active');
+  const enteringFullscreen = !appWindow.classList.contains('is-fullscreen');
+  ['position', 'left', 'top', 'width', 'height', 'margin'].forEach((property) => {
+    appWindow.style.removeProperty(property);
+  });
+  appWindow.classList.toggle('is-fullscreen', enteringFullscreen);
+  maximizeWindow.setAttribute(
+    'aria-label',
+    enteringFullscreen ? 'Restore window' : 'Fullscreen window'
+  );
+});
+
+closeWindow.addEventListener('click', () => {
+  appWindow.classList.remove('is-fullscreen', 'is-minimized');
+  appWindow.classList.add('is-closed');
+  maximizeWindow.setAttribute('aria-label', 'Fullscreen window');
+  taskbarApp.classList.remove('is-active');
+});
+
+taskbarApp.addEventListener('click', restoreWindow);
+desktopAppIcon.addEventListener('click', openLessonApp);
+longQuizIcon.addEventListener('click', openLongQuiz);
+
+let dragState = null;
+
+appTopbar.addEventListener('pointerdown', (event) => {
+  if (event.target.closest('button, .address-bar') || appWindow.classList.contains('is-fullscreen')) return;
+
+  const bounds = appWindow.getBoundingClientRect();
+  appWindow.style.position = 'fixed';
+  appWindow.style.left = `${bounds.left}px`;
+  appWindow.style.top = `${bounds.top}px`;
+  appWindow.style.width = `${bounds.width}px`;
+  appWindow.style.height = `${bounds.height}px`;
+  appWindow.style.margin = '0';
+  appWindow.setPointerCapture(event.pointerId);
+  appWindow.classList.add('is-dragging');
+
+  dragState = {
+    startX: event.clientX,
+    startY: event.clientY,
+    left: bounds.left,
+    top: bounds.top
+  };
+});
+
+appWindow.addEventListener('pointermove', (event) => {
+  if (!dragState) return;
+
+  const nextLeft = dragState.left + event.clientX - dragState.startX;
+  const nextTop = dragState.top + event.clientY - dragState.startY;
+  appWindow.style.left = `${Math.max(0, nextLeft)}px`;
+  appWindow.style.top = `${Math.max(0, nextTop)}px`;
+});
+
+appWindow.addEventListener('pointerup', (event) => {
+  if (!dragState) return;
+  appWindow.releasePointerCapture(event.pointerId);
+  appWindow.classList.remove('is-dragging');
+  dragState = null;
+});

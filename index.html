@@ -10,8 +10,25 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="browser-window">
-      <header class="browser-topbar">
+    <div class="desktop">
+      <aside class="desktop-icons" aria-label="Desktop apps">
+        <button class="desktop-icon" type="button" aria-label="PATHFIT 1 lesson app">
+          <span class="desktop-icon-art">▦</span>
+          <span>PATHFIT 1</span>
+        </button>
+        <button class="desktop-icon" type="button" aria-label="Course files">
+          <span class="desktop-icon-art folder-art">□</span>
+          <span>Course Files</span>
+        </button>
+        <button class="desktop-icon" id="longQuizIcon" type="button" aria-label="Open long quiz">
+          <span class="desktop-icon-art quiz-art">?</span>
+          <span>LONG QUIZ</span>
+        </button>
+      </aside>
+
+      <div class="window-stage">
+        <div class="browser-window">
+          <header class="browser-topbar">
         <div class="browser-left">
           <button class="nav-icon" aria-label="Back">←</button>
           <div class="dot-group">
@@ -32,10 +49,14 @@
           <button class="toolbar-btn" aria-label="Save">⎈</button>
           <button class="toolbar-btn" aria-label="Share">⇅</button>
           <button class="toolbar-btn" aria-label="Menu">⋯</button>
+          <span class="window-controls" aria-label="Window controls">
+            <button class="window-control" id="maximizeWindow" type="button" aria-label="Fullscreen window">□</button>
+            <button class="window-control close-control" id="closeWindow" type="button" aria-label="Close window">×</button>
+          </span>
         </div>
       </header>
 
-      <main class="lesson-shell">
+          <main class="lesson-shell">
         <div class="progress-row">
           <div class="progress-track">
             <div class="progress-fill"></div>
@@ -56,7 +77,22 @@
           <button class="secondary-btn" id="backButton" disabled>← BACK</button>
           <button class="primary-btn" id="continueButton">CONTINUE ▶</button>
         </div>
-      </main>
+          </main>
+        </div>
+      </div>
+
+      <footer class="taskbar">
+        <button class="launcher-button" type="button" aria-label="Open launcher">◆</button>
+        <div class="taskbar-divider"></div>
+        <button class="taskbar-app is-active" type="button">
+          <span class="taskbar-app-icon">▦</span>
+          <span>PATHFIT 1 Lesson Slides</span>
+        </button>
+        <div class="taskbar-status">
+          <span>Ready</span>
+          <span class="status-time">PATHFIT 1</span>
+        </div>
+      </footer>
     </div>
 
     <script src="script.js"></script>
